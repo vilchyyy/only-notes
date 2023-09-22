@@ -1,18 +1,20 @@
 import { Button } from "@/components/ui/button";
-import { Home, HomeIcon } from "lucide-react";
+import { type ReactNode } from "react";
 
 
 interface NavElementProps {
     text: string,
+    icon: ReactNode
 }
 
-export default function NavElement({text}: NavElementProps) {
+export default function NavElement({text, icon}: NavElementProps) {
     return (
         <div>       
             <Button
+                className="flex justify-start w-full h-14"
                 variant={"ghost"}
             >
-                 <Home className="mr-2" />{text}
+                {icon} <p className="text-lg">{text}</p>
             </Button>
 
         </div>
