@@ -33,7 +33,10 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: z.string(),
     AZURE_AD_CLIENT_ID: z.string(),
     AZURE_AD_CLIENT_SECRET: z.string().min(1),
-    AZURE_AD_TENANT_ID: z.string()
+    AZURE_AD_TENANT_ID: z.string(),
+    S3_ACCESS_KEY: z.string(),
+    S3_SECRET_KEY: z.string(),
+    S3_BUCKET_NAME: z.string(),
 
   },
 
@@ -59,7 +62,10 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
     AZURE_AD_CLIENT_ID: process.env.AZURE_AD_CLIENT_ID,
     AZURE_AD_CLIENT_SECRET: process.env.AZURE_AD_CLIENT_SECRET,
-    AZURE_AD_TENANT_ID: process.env.AZURE_AD_TENANT_ID
+    AZURE_AD_TENANT_ID: process.env.AZURE_AD_TENANT_ID,
+    S3_ACCESS_KEY: process.env.S3_ACCESS_KEY,
+    S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
+    S3_SECRET_KEY: process.env.S3_SECRET_KEY
 
   },
   /**
