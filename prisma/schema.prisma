@@ -30,13 +30,13 @@ model Account {
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String?  @db.Text
-    access_token      String?  @db.Text
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
     expires_at        Int?
     ext_expires_in    Int?
     token_type        String?
     scope             String?
-    id_token          String?  @db.Text
+    id_token          String? @db.Text
     session_state     String?
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -52,13 +52,78 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?   @db.VarChar(30000)
-    accounts      Account[]
-    sessions      Session[]
+    id               String          @id @default(cuid())
+    class            String?
+    posts            Post[]
+    comments         Comment[]
+    name             String?
+    email            String?         @unique
+    emailVerified    DateTime?
+    image            String?         @db.VarChar(30000)
+    accounts         Account[]
+    sessions         Session[]
+    commentReply     CommentReply[]
+    sentMessages     DirectMessage[] @relation(name: "sentMessages")
+    recievedMessages DirectMessage[] @relation(name: "recievedMessages")
+    createdAt        DateTime        @default(now())
+}
+
+model Post {
+    id           String         @id @default(cuid())
+    userId       String
+    user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+    text         String         @db.VarChar(500)
+    comments     Comment[]
+    commentReply CommentReply[]
+    tags         Tag[]
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime?
+
+    @@index([id])
+}
+
+model Tag {
+    id     String  @id @default(cuid())
+    name   String  @db.VarChar(20)
+    Post   Post?   @relation(fields: [postId], references: [id])
+    postId String?
+}
+
+model Comment {
+    id             String         @id @default(cuid())
+    userId         String
+    user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+    text           String         @db.VarChar(500)
+    postId         String
+    post           Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+    replies        CommentReply[]
+    commentReplyId String
+    createdAt      DateTime       @default(now())
+    updatedAt      DateTime?
+}
+
+model CommentReply {
+    id        String    @id @default(cuid())
+    userId    String
+    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    text      String    @db.VarChar(500)
+    postId    String
+    post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+    commentId String
+    comment   Comment   @relation(fields: [commentId], references: [id], onDelete: Cascade)
+    createdAt DateTime  @default(now())
+    updatedAt DateTime?
+}
+
+model DirectMessage {
+    id         String    @id @default(cuid())
+    senderId   String
+    sender     User      @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sentMessages")
+    recieverId String
+    reciever   User      @relation(fields: [recieverId], references: [id], onDelete: Cascade, name: "recievedMessages")
+    text       String    @db.VarChar(500)
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime?
 }
 
 model VerificationToken {

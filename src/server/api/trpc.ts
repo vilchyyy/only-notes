@@ -25,6 +25,8 @@ import { db } from "~/server/db";
  */
 
 interface CreateContextOptions {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  req: any;
   session: Session | null;
 }
 
@@ -40,6 +42,8 @@ interface CreateContextOptions {
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    req: opts.req,
     session: opts.session,
     db,
   };
@@ -59,6 +63,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 
   return createInnerTRPCContext({
     session,
+    req
   });
 };
 

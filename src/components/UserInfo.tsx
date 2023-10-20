@@ -1,18 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
-import { LogInIcon, LogOutIcon } from "lucide-react";
+import { LogInIcon, LogOutIcon, User2Icon, UserCircleIcon, UserIcon } from "lucide-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function UserInfo() {
     const { data: sessionData } = useSession();
     return (
-        <div className="flex gap-8 m-2 items-center">
+        <div className="sm:flex hidden flex-col sm:flex-row gap-4 sm:gap-8 m-1 items-center">
             <Avatar>
-                <AvatarImage className="rounded-full" src={sessionData?.user.image ?? ""} />
-                <AvatarFallback>XD</AvatarFallback>
+                <AvatarImage className="rounded-full " src={sessionData?.user.image ?? ""} />
+                <AvatarFallback>
+                    <UserCircleIcon className="h-8 w-8"/>
+                </AvatarFallback>
             </Avatar>
-            {sessionData && <p className="text-lg font-semibold">{sessionData.user.name}</p>}
+            {sessionData && <p className="text-lg hidden sm:block font-semibold">{sessionData.user.name}</p>}
            <Button
+                className="hidden sm:flex"
                 variant={"outline"}
                 size={"icon"}
                 onClick={sessionData ? () => void signOut() : () => void signIn()}
