@@ -1,5 +1,10 @@
+import { TRPCError } from "@trpc/server";
 import { experimental_isMultipartFormDataRequest, experimental_parseMultipartFormData, experimental_createMemoryUploadHandler } from "@trpc/server/adapters/node-http/content-type/form-data";
 import { z } from "zod";
+import { nanoid } from 'nanoid'
+import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
+import { S3Client } from "@aws-sdk/client-s3";
+
 
 import {
   createTRPCRouter,
@@ -8,6 +13,8 @@ import {
 } from "~/server/api/trpc";
 import { uploadFileSchema } from "~/utils/schemas";
 import { writeFileToDisk } from "~/utils/writeFileToDisk";
+import { env } from "node:process";
+import { s3 } from "~/server/s3/s3";
 
 const formDataProcedure = publicProcedure.use(async (opts) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -34,6 +41,44 @@ export const postsRouter = createTRPCRouter({
       };
     }),
 
+    createPresignedUrl: protectedProcedure
+    .input(z.object({ postId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      // const userId = ctx.session.user.id;
+      const post = await ctx.db.post.findUnique({
+        where: {
+          id: input.postId,
+        },
+      });
+
+      if (!post) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "the post does not exist",
+        });
+      }
+
+      const imageId = nanoid()+".jpg"
+      await ctx.db.image.create({
+        data: {
+          postId: post.id,
+          remoteId: imageId,
+        },
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+      return createPresignedPost(s3, {
+        Bucket: "notes-imgs",
+        Key: imageId,
+        Fields: {
+          key: imageId,
+        },
+        Conditions: [
+          ['content-length-range', 0, 5*1048576], // up to 5 MB
+      ]
+      });
+    }),
+
   getAll: protectedProcedure
     .query(({ ctx }) => {
       return ctx.db.post.findMany({});
@@ -46,6 +91,8 @@ export const postsRouter = createTRPCRouter({
       image: await writeFileToDisk(opts.input.image),
     };
   }),
+
+  
 
     createOne: protectedProcedure
       .input(z.object({ text: z.string() }))

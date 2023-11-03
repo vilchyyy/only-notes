@@ -6,7 +6,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Dropzone from "react-dropzone";
-import { StandardDropzone } from "~/components/StandardDropzone";
 import Nav from "~/components/Nav";
 import { api } from "~/utils/api";
 

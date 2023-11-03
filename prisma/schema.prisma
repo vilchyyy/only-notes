@@ -76,10 +76,18 @@ model Post {
     comments     Comment[]
     commentReply CommentReply[]
     tags         Tag[]
+    images       Image[]
     createdAt    DateTime       @default(now())
     updatedAt    DateTime?
 
     @@index([id])
+}
+
+model Image {
+    id       String  @id @default(cuid())
+    remoteId String?
+    postId  String
+    post   Post  @relation(fields: [postId], references: [id])
 }
 
 model Tag {

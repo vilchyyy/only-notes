@@ -4,6 +4,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Nav from "~/components/Nav";
 import NavElement from "~/components/NavElement";
+import Upload from "~/components/Upload";
 
 import { api } from "~/utils/api";
 
@@ -47,6 +48,8 @@ function AuthShowcase() {
     undefined, // no input
     { enabled: sessionData?.user !== undefined },
   );
+  const presigned = api.posts.createPresignedUrl.useMutation(
+  )
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
@@ -59,6 +62,10 @@ function AuthShowcase() {
       >
         {sessionData ? "Sign out" : "Sign in"}
       </Button>
+      <Button 
+        onClick={ () => { console.log(presigned.mutate({postId: "clnyedjt000052zp4xbkac072"}))}}
+      >presigned</Button>
+      <Upload/>
     </div>
   );
 }
