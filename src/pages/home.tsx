@@ -67,12 +67,14 @@ export default function Home() {
             {
               userQuery.data?.map((post) => (
                 <p key={post.id}>{post.text}</p>
+                
               ))
             }
             <Button onClick={(e) => {
               e.preventDefault()
               createPost.mutate({
-                text: "TEST"
+                text: "TEST",
+                images: [],
               })
               
             }}></Button>

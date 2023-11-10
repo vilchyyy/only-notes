@@ -1,11 +1,12 @@
 import { TRPCError } from "@trpc/server";
-import { experimental_isMultipartFormDataRequest, experimental_parseMultipartFormData, experimental_createMemoryUploadHandler } from "@trpc/server/adapters/node-http/content-type/form-data";
+import {
+  experimental_isMultipartFormDataRequest,
+  experimental_parseMultipartFormData,
+  experimental_createMemoryUploadHandler,
+} from "@trpc/server/adapters/node-http/content-type/form-data";
 import { z } from "zod";
-import { nanoid } from 'nanoid'
+import { nanoid } from "nanoid";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
-import { S3Client } from "@aws-sdk/client-s3";
-
-
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -13,8 +14,8 @@ import {
 } from "~/server/api/trpc";
 import { uploadFileSchema } from "~/utils/schemas";
 import { writeFileToDisk } from "~/utils/writeFileToDisk";
-import { env } from "node:process";
 import { s3 } from "~/server/s3/s3";
+import { createPostValidationSchema } from "~/components/Upload";
 
 const formDataProcedure = publicProcedure.use(async (opts) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -41,7 +42,7 @@ export const postsRouter = createTRPCRouter({
       };
     }),
 
-    createPresignedUrl: protectedProcedure
+  createPresignedUrl: protectedProcedure
     .input(z.object({ postId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // const userId = ctx.session.user.id;
@@ -58,7 +59,7 @@ export const postsRouter = createTRPCRouter({
         });
       }
 
-      const imageId = nanoid()+".jpg"
+      const imageId = nanoid() + ".jpg";
       await ctx.db.image.create({
         data: {
           postId: post.id,
@@ -74,41 +75,41 @@ export const postsRouter = createTRPCRouter({
           key: imageId,
         },
         Conditions: [
-          ['content-length-range', 0, 5*1048576], // up to 5 MB
-      ]
+          ["content-length-range", 0, 5 * 1048576], // up to 5 MB
+        ],
       });
     }),
 
-  getAll: protectedProcedure
-    .query(({ ctx }) => {
-      return ctx.db.post.findMany({});
-    }),
-  
-  upload: formDataProcedure
-  .input(uploadFileSchema)
-  .mutation(async (opts) => {
+  getAll: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.post.findMany({
+      include: {
+        images: true,
+      },
+    });
+  }),
+
+  upload: formDataProcedure.input(uploadFileSchema).mutation(async (opts) => {
     return {
       image: await writeFileToDisk(opts.input.image),
     };
   }),
 
-  
-
-    createOne: protectedProcedure
-      .input(z.object({ text: z.string() }))
-      .mutation(async ({ ctx, input}) => {
-        try {
+  createOne: protectedProcedure
+    .input(createPostValidationSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return (
           await ctx.db.post.create({
             data: {
               text: input.text,
-              userId: ctx.session.user.id
-            }
+              userId: ctx.session.user.id,
+            },
           })
-        } catch (error) {
-          console.log(error)
-        }
-
-      }),
+        )
+      } catch (error) {
+        console.log(error);
+      }
+    }),
 
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";

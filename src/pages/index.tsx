@@ -1,16 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { BellRingIcon, BookmarkIcon, HomeIcon, MailsIcon, UserCircleIcon } from "lucide-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Nav from "~/components/Nav";
-import NavElement from "~/components/NavElement";
 import Upload from "~/components/Upload";
 
 import { api } from "~/utils/api";
 
 export default function Home() {
   const hello = api.example.hello.useQuery({ text: "" });
-  const data = api.s3.getObjects.useQuery()
 
   return (
     <>
