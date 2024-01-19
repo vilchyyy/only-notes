@@ -11,7 +11,7 @@ export const s3Router = createTRPCRouter({
     const { s3 } = ctx;
 
     const listObjectsOutput = await s3.listObjectsV2({
-      Bucket: "notes-imgs",
+      Bucket: env.S3_BUCKET_NAME,
     });
 
     return listObjectsOutput.Contents ?? [];
@@ -25,7 +25,7 @@ export const s3Router = createTRPCRouter({
 
     const uploadId = (
       await s3.createMultipartUpload({
-        Bucket: "notes-imgs",
+        Bucket: env.S3_BUCKET_NAME,
         Key: key,
       })
     ).UploadId;

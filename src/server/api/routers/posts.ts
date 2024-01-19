@@ -16,6 +16,7 @@ import { uploadFileSchema } from "~/utils/schemas";
 import { writeFileToDisk } from "~/utils/writeFileToDisk";
 import { s3 } from "~/server/s3/s3";
 import { createPostValidationSchema } from "~/components/Upload";
+import { env } from "process";
 
 const formDataProcedure = publicProcedure.use(async (opts) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -69,7 +70,7 @@ export const postsRouter = createTRPCRouter({
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
       return createPresignedPost(s3, {
-        Bucket: "notes-imgs",
+        Bucket: env.S3_BUCKET_NAME || "",
         Key: imageId,
         Fields: {
           key: imageId,
