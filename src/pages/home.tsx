@@ -4,10 +4,12 @@ import { randomInt } from "crypto";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { env } from "process";
 import { useState } from "react";
 import Dropzone from "react-dropzone";
 import Nav from "~/components/Nav";
 import { api } from "~/utils/api";
+import Image from "next/image";
 
 export default function Home() {
     const userQuery = api.posts.getAll.useQuery()
@@ -66,7 +68,16 @@ export default function Home() {
             {!userQuery.data && <h1>Nie znaleziono postów</h1>}
             {
               userQuery.data?.map((post) => (
-                <p key={post.id}>{post.text}</p>
+                <div>
+                  <p key={post.id}>{post.text}</p>
+                  <Image 
+                    alt="notatki"
+                    src={`http://127.0.0.1:9000/notes-imgs/${post.images[0]?.remoteId}`} 
+                    width={100}
+                    height={200}
+                  />
+                </div>
+
                 
               ))
             }

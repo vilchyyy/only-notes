@@ -91,19 +91,6 @@ export default function Upload() {
       >
         <div>
           <label>
-            Title
-            <br />
-            <Input {...form.register("text")} className="border" />
-          </label>
-
-          {form.formState.errors.text?.message && (
-            <p className="text-red-700">
-              {form.formState.errors.text?.message}
-            </p>
-          )}
-        </div>
-        <div>
-          <label>
             Text
             <br />
             <Textarea {...form.register("text")} className="border" />
