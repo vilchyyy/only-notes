@@ -5,6 +5,15 @@ import { Form, SubmitButton, useZodForm } from "./Form";
 import { Textarea } from "@/components/ui/textarea";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "@/components/ui/carousel";
+import Image from "next/image";
+import { Card, CardContent } from "@/components/ui/card";
 
 export const createPostValidationSchema = z.object({
   text: z.string(),
@@ -104,13 +113,32 @@ export default function Upload() {
         <div className="mt-5 text-center">
           <div
             className={`flex h-32 w-full items-center justify-center rounded border-2 border-dashed border-neutral-700 ${
-              isDragAccept && " border-emerald-500 "
-            } ${isDragReject && "border-red-600 "}`}
+              isDragAccept && "border-green-500 "
+            } ${isDragReject && " border-red-600"} `}
             {...getRootProps()}
           >
             <input {...getInputProps()} />
             {isDragActive ? "file" : "+"}
           </div>
+          {images[0] && (
+            <Carousel className="w-full max-w-full">
+              <CarouselContent className=" max-w-[200px]">
+                {images.map((image, index) => (
+                  <CarouselItem key={index}>
+                    <div className="p-1">
+                      <Card>
+                        <CardContent className="flex aspect-square  items-center justify-center p-6">
+                          <img src={URL.createObjectURL(image)} alt="" />
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
+          )}
         </div>
       </Form>
       <SubmitButton
