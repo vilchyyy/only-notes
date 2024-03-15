@@ -54,7 +54,9 @@ model Session {
 model User {
     id               String          @id @default(cuid())
     class            String?
-    posts            Post[]
+    posts            Post[] @relation(name: "author")
+    bookmarks       Post[] @relation(name: "bookmarks")
+    likes            Post[] @relation(name: "likes")
     comments         Comment[]
     name             String?
     email            String?         @unique
@@ -68,13 +70,21 @@ model User {
     createdAt        DateTime        @default(now())
 }
 
+model Cattegory {
+    id        String   @id @default(cuid())
+    name      String   @db.VarChar(20) @unique
+    
+}
+
 model Post {
     id           String         @id @default(cuid())
     userId       String
-    user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user         User           @relation(name: "author" ,fields: [userId], references: [id], onDelete: Cascade)
     text         String         @db.VarChar(500)
     comments     Comment[]
+    likes        User[]         @relation(name: "likes")
     commentReply CommentReply[]
+    bookmarks        User[]         @relation(name: "bookmarks")
     tags         Tag[]
     images       Image[]
     createdAt    DateTime       @default(now())

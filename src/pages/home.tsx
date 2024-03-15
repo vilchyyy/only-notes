@@ -53,7 +53,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col justify-between sm:flex-row sm:justify-normal">
-        <div className="hidden h-screen flex-col sm:flex ">
+        <div className="top-0  hidden h-screen w-60 flex-col sm:sticky sm:flex ">
           <h1 className="mx-9 my-4 w-min border border-white px-10 pb-0 text-4xl">
             ONLY NOTES
           </h1>
@@ -68,9 +68,12 @@ export default function Home() {
             {!userQuery.data && <h1>Nie znaleziono postów</h1>}
             {userQuery.data?.map((post) => (
               <Post
+                id={post.id}
+                bookmarks={post.bookmarks.map((bookmark) => bookmark.id)}
                 key={post.id}
                 text={post.text}
                 user={post.userId}
+                likes={post.likes.map((like) => like.id)}
                 images={post.images.map((image) => image.remoteId)}
               />
             ))}

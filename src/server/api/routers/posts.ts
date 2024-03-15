@@ -85,6 +85,8 @@ export const postsRouter = createTRPCRouter({
     return ctx.db.post.findMany({
       include: {
         images: true,
+        likes: true,
+        bookmarks: true,
       },
     });
   }),
@@ -99,14 +101,12 @@ export const postsRouter = createTRPCRouter({
     .input(createPostValidationSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        return (
-          await ctx.db.post.create({
-            data: {
-              text: input.text,
-              userId: ctx.session.user.id,
-            },
-          })
-        )
+        return await ctx.db.post.create({
+          data: {
+            text: input.text,
+            userId: ctx.session.user.id,
+          },
+        });
       } catch (error) {
         console.log(error);
       }
