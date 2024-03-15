@@ -14,6 +14,14 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Bookmark, Heart, MessageSquare, SendHorizonal } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -64,16 +72,30 @@ export default function Post({
               <CarouselContent>
                 {images.map((image, index) => (
                   <CarouselItem key={index} className="basis-1/3">
-                    <div className="p-1">
-                      <Card>
-                        <CardContent className="flex aspect-square items-center justify-center p-6">
-                          <img
-                            src={`http://127.0.0.1:9000/notes-imgs/${image}`}
-                            alt=""
-                          />
-                        </CardContent>
-                      </Card>
-                    </div>
+                    <Dialog>
+                      <DialogTrigger>
+                        <div className="p-1">
+                          <Card>
+                            <CardContent className="flex aspect-square items-center justify-center p-6">
+                              <img
+                                src={`http://127.0.0.1:9000/notes-imgs/${image}`}
+                                alt=""
+                              />
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Are you absolutely sure?</DialogTitle>
+                          <DialogDescription>
+                            This action cannot be undone. This will permanently
+                            delete your account and remove your data from our
+                            servers.
+                          </DialogDescription>
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
                   </CarouselItem>
                 ))}
               </CarouselContent>
