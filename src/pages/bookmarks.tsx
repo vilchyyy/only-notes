@@ -1,4 +1,9 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { SendHorizonal } from "lucide-react";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { useState } from "react";
 import Nav from "~/components/Nav";
 import Post from "~/components/Post";
 
@@ -6,6 +11,8 @@ import { api } from "~/utils/api";
 
 export default function Bookmarks() {
   const userQuery = api.user.getBookmarkedPosts.useQuery();
+  const [query, setQuery] = useState("");
+  const router = useRouter();
 
   return (
     <>
@@ -22,9 +29,30 @@ export default function Bookmarks() {
           <Nav />
         </div>
 
-        <div className="container flex w-full flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <div className="flex w-full flex-col items-center gap-2">
-            <p className="text-4xl font-bold leading-7  [&:not(:first-child)]:mt-6">
+        <div className="container flex w-full flex-col gap-12 px-4 py-4 pb-16 ">
+          <div className="flex w-full items-center justify-center  gap-2">
+            <Input
+              value={query}
+              onKeyDown={async (e) => {
+                if (e.key === "Enter") {
+                  router.push(`/search/${query}`);
+                }
+              }}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Wyszukaj posty, bądź użytkowników"
+              className="h-14 w-full bg-zinc-900"
+            />
+            <Button
+              className="h-full"
+              onClick={() => {
+                router.push(`/search/${query}`);
+              }}
+            >
+              <SendHorizonal />
+            </Button>
+          </div>
+          <div className="flex w-full flex-col items-center gap-6">
+            <p className="mb-4 text-4xl font-bold leading-7  [&:not(:first-child)]:mt-6">
               Zapisane
             </p>
             {!userQuery.data && <h1>Nie znaleziono postów</h1>}

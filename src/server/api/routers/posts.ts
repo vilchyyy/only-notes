@@ -128,6 +128,39 @@ export const postsRouter = createTRPCRouter({
       });
     }),
 
+  search: protectedProcedure
+    .input(z.object({ query: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.post.findMany({
+        where: {
+          OR: [
+            {
+              text: {
+                contains: input.query,
+              },
+            },
+            {
+              user: {
+                name: {
+                  contains: input.query,
+                },
+              },
+            },
+          ],
+        },
+        include: {
+          images: true,
+          likes: true,
+          comments: true,
+
+          bookmarks: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    }),
+
   upload: formDataProcedure.input(uploadFileSchema).mutation(async (opts) => {
     return {
       image: await writeFileToDisk(opts.input.image),

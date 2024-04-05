@@ -1,19 +1,26 @@
 import { Button } from "@/components/ui/button";
-import { useSession } from "next-auth/react";
-import Head from "next/head";
-import Nav from "~/components/Nav";
-import { api } from "~/utils/api";
-import Post from "~/components/Post";
-import Upload from "~/components/Upload";
 import { Input } from "@/components/ui/input";
 import { SendHorizonal } from "lucide-react";
-import { useState } from "react";
+import Head from "next/head";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import Nav from "~/components/Nav";
+import Post from "~/components/Post";
 
-export default function Home() {
-  const userQuery = api.posts.getAll.useQuery();
-  const [query, setQuery] = useState("");
+import { api } from "~/utils/api";
+
+export default function Search() {
   const router = useRouter();
+  const [query, setQuery] = useState("");
+  let slug = router.query.search;
+  if (typeof slug !== "string") {
+    slug = undefined;
+  }
+
+  const posts = api.posts.search.useQuery({
+    query: slug ?? "ls;dfkjasdfijwpo",
+  });
+
   return (
     <>
       <Head>
@@ -30,7 +37,7 @@ export default function Home() {
         </div>
 
         <div className="container flex w-full flex-col gap-12 px-4 py-4 pb-16 ">
-          <div className=" flex w-full items-center justify-center  gap-2">
+          <div className="flex w-full items-center justify-center  gap-2">
             <Input
               onKeyDown={async (e) => {
                 if (e.key === "Enter") {
@@ -52,9 +59,11 @@ export default function Home() {
             </Button>
           </div>
           <div className="flex w-full flex-col items-center gap-6">
-            <Upload />
-            {!userQuery.data && <h1>Nie znaleziono postów</h1>}
-            {userQuery.data?.map((post) => (
+            <p className="mb-4 text-4xl font-bold leading-7  [&:not(:first-child)]:mt-6">
+              Wyniki Wyszukiwania: {slug}
+            </p>
+            {!posts.data && <h1>Nie znaleziono postów</h1>}
+            {posts.data?.map((post) => (
               <Post
                 comments={post.comments.map((comment) => comment.id)}
                 id={post.id}

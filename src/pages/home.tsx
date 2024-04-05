@@ -5,9 +5,15 @@ import Nav from "~/components/Nav";
 import { api } from "~/utils/api";
 import Post from "~/components/Post";
 import Upload from "~/components/Upload";
+import { Input } from "@/components/ui/input";
+import { SendHorizonal } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const userQuery = api.posts.getAll.useQuery();
+  const [query, setQuery] = useState("");
+  const router = useRouter();
 
   return (
     <>
@@ -24,8 +30,30 @@ export default function Home() {
           <Nav />
         </div>
 
-        <div className="container flex w-full flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <div className="flex w-full flex-col items-center gap-2">
+        <div className="container flex w-full flex-col gap-12 px-4 py-4 pb-16 ">
+          <div className="flex w-full items-center justify-center  gap-2">
+            <Input
+              onKeyDown={async (e) => {
+                if (e.key === "Enter") {
+                  router.push(`/search/${query}`);
+                }
+              }}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Wyszukaj posty, bądź użytkowników"
+              className="h-14 w-full bg-zinc-900"
+            />
+            <Button
+              className="h-full"
+              onClick={() => {
+                router.push(`/search/${query}`);
+              }}
+            >
+              <SendHorizonal />
+            </Button>
+          </div>
+
+          <div className="flex w-full flex-col items-center gap-6">
             <Upload />
             {!userQuery.data && <h1>Nie znaleziono postów</h1>}
             {userQuery.data?.map((post) => (
