@@ -1,5 +1,5 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useId } from 'react';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useId } from "react";
 import {
   FieldValues,
   FormProvider,
@@ -8,8 +8,8 @@ import {
   useFormContext,
   UseFormProps,
   UseFormReturn,
-} from 'react-hook-form';
-import { z } from 'zod';
+} from "react-hook-form";
+import { z } from "zod";
 
 type UseZodForm<TInput extends FieldValues> = UseFormReturn<TInput> & {
   /**
@@ -18,17 +18,17 @@ type UseZodForm<TInput extends FieldValues> = UseFormReturn<TInput> & {
   id: string;
 };
 export function useZodForm<TSchema extends z.ZodType>(
-  props: Omit<UseFormProps<TSchema['_input']>, 'resolver'> & {
+  props: Omit<UseFormProps<TSchema["_input"]>, "resolver"> & {
     schema: TSchema;
   },
 ) {
-  const form = useForm<TSchema['_input']>({
+  const form = useForm<TSchema["_input"]>({
     ...props,
     resolver: zodResolver(props.schema, undefined, {
       // This makes it so we can use `.transform()`s on the schema without same transform getting applied again when it reaches the server
       raw: true,
     }),
-  }) as UseZodForm<TSchema['_input']>;
+  }) as UseZodForm<TSchema["_input"]>;
 
   form.id = useId();
 
@@ -39,7 +39,7 @@ export function useZodForm<TSchema extends z.ZodType>(
 type AnyZodForm = UseZodForm<any>;
 
 export function Form<TInput extends FieldValues>(
-  props: Omit<React.ComponentProps<'form'>, 'onSubmit' | 'id'> & {
+  props: Omit<React.ComponentProps<"form">, "onSubmit" | "id"> & {
     handleSubmit: SubmitHandler<TInput>;
     form: UseZodForm<TInput>;
   },
@@ -55,9 +55,9 @@ export function Form<TInput extends FieldValues>(
             try {
               await handleSubmit(values);
             } catch (cause) {
-              form.setError('root.server', {
-                message: (cause as Error)?.message ?? 'Unknown error',
-                type: 'server',
+              form.setError("root.server", {
+                message: (cause as Error)?.message ?? "Unknown error",
+                type: "server",
               });
             }
           })(event);
@@ -68,7 +68,7 @@ export function Form<TInput extends FieldValues>(
 }
 
 export function SubmitButton(
-  props: Omit<React.ComponentProps<'button'>, 'type' | 'form'> & {
+  props: Omit<React.ComponentProps<"button">, "type" | "form"> & {
     /**
      * Optionally specify a form to submit instead of the closest form context.
      */
@@ -80,7 +80,7 @@ export function SubmitButton(
   const form = props.form ?? context;
   if (!form) {
     throw new Error(
-      'SubmitButton must be used within a Form or have a form prop',
+      "SubmitButton must be used within a Form or have a form prop",
     );
   }
   const { formState } = form;
@@ -92,7 +92,7 @@ export function SubmitButton(
       type="submit"
       disabled={formState.isSubmitting}
     >
-      {formState.isSubmitting ? 'Loading' : props.children}
+      {formState.isSubmitting ? "Loading" : props.children}
     </button>
   );
 }

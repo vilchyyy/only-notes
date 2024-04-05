@@ -136,7 +136,7 @@ export default function Post({
             <Dialog>
               <DialogTrigger>
                 <div className="flex">
-                  <MessageSquare />
+                  <MessageSquare className="mr-1" />
                   {comments.length}
                 </div>
               </DialogTrigger>
