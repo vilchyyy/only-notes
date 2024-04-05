@@ -1,28 +1,56 @@
-# Create T3 App
+# OnlyNotes
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+## Instalacja
 
-## What's next? How do I make an app with this?
+- Pobierz minio ze strony min.io
+- Uruchom minio za pomocą komendy `.\minio.exe server start object storage server`
+  - Utwórz bucket o nazwie only-notes
+  - Ustaw dostępność bucketa na public
+  - Utwórz access key
+  - Przepisz otrzymane informacje do pliku .env w następujący sposób
+    `S3_URL="http://127.0.0.1:9000"`
+    `S3_ACCESS_KEY="klucz z wyżej"`
+    ` S3_SECRET_KEY="secret z wyżej"`
+    `S3_BUCKET_NAME="only-notes"`
+- Uruchom XAMPP, lub inny serwer MySQL
+  - Utwórz bazę danych o nazwie only-notes
+  - Umieść connection string w `.env` w następujący sposób `DATABASE_URL="mysql://root:@localhost:3306/only_notes"`
+- Otwórz platformę azure w celu ustawienia uwieżytelniania użytkowników
+  - Wejdź na azure entra ID, po czym na aplikacje
+  - utwórz nową aplikację
+  - dodaj identyfikatory URI przekierowania do aplikacji
+    - `http://localhost:3000/`
+    - `http://localhost:3000/api/auth/callback/azure-ad`
+  - wpisz klucze z azure do pliku `.env`
+    - `AZURE_AD_CLIENT_ID="identyfikator klienta"`
+    - `AZURE_AD_CLIENT_SECRET="poświadczenie tajne (trzeba dodać)"`
+    - `AZURE_AD_TENANT_ID="identyfikator katalogu"`
+- Uruchom `pnpm db:push`, aby zsynchronizować bazę danych z plikiem schema.prisma
+- Uruchom `pnpm i`, aby zainstalować moduły
+- Uruchom `pnpm dev`, aby uruchomić projekt
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Używane biblioteki
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+- shadcn/ui
+- react
+- nextjs (pages router)
+- nextauth
+- t3app
+- prisma
+- trpc
+- tailwindcss
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## Struktura aplikacji
 
-## Learn More
-
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
-
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- @ - tu znajdują się komponenty ui biblioteki shadcn/ui, aby je pobierać należy używać narzędzia cli dostępnego na https://ui.shadcn.com/.
+- prisma - tu znajduje się schemat bazy danych, aby zmienić strukturę danych, należy edytować schemat.
+- public - tu znajdują się publicznie dostępne statyczne pliki na stronie
+- src - tu znajduje się cały kod aplikacji
+  - components - tu znajdują się reactowe komponenty, które tworzą strony
+  - pages - tu znajdują się strony routera nextjs
+  - server - tu znajduję się backend
+    - api - tu znajdują się routery do funkcji na backendzie, aby zapoznać się z działaniem należy zapoznać się z dokumentacją trpc https://trpc.io
+    - s3 - folder i plik potrzebny do prawidłowego działania uploadu zdjęć do serwera plików
+    - auth.ts - plik z opcjami i callbackami uwieżytelniania nextauth, aby zapoznać się z działaniem, przeczytać dokumentację https://authjs.dev/
+  - .env - tu znajdują się zmienne środowiskowe, powinny być ściśle tajne, należy go stworzyć
+  - reszta plików to konfiguracje poszczególnych bibliotek

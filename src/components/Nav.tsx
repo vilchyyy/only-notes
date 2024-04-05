@@ -11,6 +11,7 @@ export default function Nav() {
           icon={<HomeIcon className="sm:mr-3" />}
           text="Strona Główna"
         />
+        {/* Jakub Surma tu był, pozdrawiam serdecznie. */}
         <NavElement
           link="/bookmarks"
           text="Zapisane"
