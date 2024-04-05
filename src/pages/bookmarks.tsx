@@ -1,9 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Nav from "~/components/Nav";
 import Post from "~/components/Post";
-import Upload from "~/components/Upload";
 
 import { api } from "~/utils/api";
 
@@ -27,12 +24,13 @@ export default function Bookmarks() {
 
         <div className="container flex w-full flex-col items-center justify-center gap-12 px-4 py-16 ">
           <div className="flex w-full flex-col items-center gap-2">
-            <p className="leading-7 [&:not(:first-child)]:mt-6">
-              <h1 className="text-4xl font-bold">Zapisane</h1>
+            <p className="text-4xl font-bold leading-7  [&:not(:first-child)]:mt-6">
+              Zapisane
             </p>
             {!userQuery.data && <h1>Nie znaleziono postów</h1>}
             {userQuery.data?.map((post) => (
               <Post
+                comments={post.comments.map((comment) => comment.id)}
                 id={post.id}
                 bookmarks={post.bookmarks.map((bookmark) => bookmark.id)}
                 key={post.id}

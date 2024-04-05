@@ -5,9 +5,10 @@ import { type ReactNode } from "react";
 interface NavElementProps {
   text: string;
   icon: ReactNode;
+  link: string;
 }
 
-export default function NavElement({ text, icon }: NavElementProps) {
+export default function NavElement({ text, icon, link }: NavElementProps) {
   const router = useRouter();
   return (
     <div>
@@ -16,7 +17,7 @@ export default function NavElement({ text, icon }: NavElementProps) {
         variant={"ghost"}
         onClick={(e) => {
           e.preventDefault();
-          router.push("/home").catch((e) => {
+          router.push(link).catch((e) => {
             console.log(e);
           });
         }}

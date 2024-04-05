@@ -43,6 +43,27 @@ export const postsRouter = createTRPCRouter({
       };
     }),
 
+  getOne: protectedProcedure
+    .input(z.object({ postId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.db.post.findUnique({
+        where: {
+          id: input.postId,
+        },
+        include: {
+          comments: {
+            include: {
+              user: true,
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+          },
+        },
+      });
+      return post;
+    }),
+
   createPresignedUrl: protectedProcedure
     .input(z.object({ postId: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -68,9 +89,8 @@ export const postsRouter = createTRPCRouter({
         },
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
       return createPresignedPost(s3, {
-        Bucket: env.S3_BUCKET_NAME || "",
+        Bucket: env.S3_BUCKET_NAME ?? "",
         Key: imageId,
         Fields: {
           key: imageId,
@@ -86,10 +106,27 @@ export const postsRouter = createTRPCRouter({
       include: {
         images: true,
         likes: true,
+        comments: true,
+
         bookmarks: true,
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
   }),
+
+  comment: protectedProcedure
+    .input(z.object({ text: z.string(), postId: z.string() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.db.comment.create({
+        data: {
+          text: input.text,
+          userId: ctx.session.user.id,
+          postId: input.postId,
+        },
+      });
+    }),
 
   upload: formDataProcedure.input(uploadFileSchema).mutation(async (opts) => {
     return {

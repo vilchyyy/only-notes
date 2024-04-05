@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Nav from "~/components/Nav";
+import { api } from "~/utils/api";
+import Post from "~/components/Post";
 import Upload from "~/components/Upload";
 
-import { api } from "~/utils/api";
-
 export default function Home() {
-  const hello = api.example.hello.useQuery({ text: "" });
+  const userQuery = api.posts.getAll.useQuery();
 
   return (
     <>
@@ -17,59 +17,35 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col justify-between sm:flex-row sm:justify-normal">
-        <div className="h-screen flex-col  sm:flex ">
+        <div className="top-0  hidden h-screen w-60 flex-col sm:sticky sm:flex ">
           <h1 className="mx-9 my-4 w-min border border-white px-10 pb-0 text-4xl">
             ONLY NOTES
           </h1>
           <Nav />
         </div>
 
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <div className="flex flex-col items-center gap-2">
-            <p className="leading-7 [&:not(:first-child)]:mt-6">
-              {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-            </p>
-            <AuthShowcase />
+        <div className="container flex w-full flex-col items-center justify-center gap-12 px-4 py-16 ">
+          <div className="flex w-full flex-col items-center gap-2">
+            <Upload />
+            {!userQuery.data && <h1>Nie znaleziono postów</h1>}
+            {userQuery.data?.map((post) => (
+              <Post
+                comments={post.comments.map((comment) => comment.id)}
+                id={post.id}
+                bookmarks={post.bookmarks.map((bookmark) => bookmark.id)}
+                key={post.id}
+                text={post.text}
+                user={post.userId}
+                likes={post.likes.map((like) => like.id)}
+                images={post.images.map((image) => image.remoteId)}
+              />
+            ))}
           </div>
         </div>
-        {/* <div className="block sm:hidden">
+        <div className="block sm:hidden">
           <Nav />
-        </div> */}
+        </div>
       </main>
     </>
-  );
-}
-
-function AuthShowcase() {
-  const { data: sessionData } = useSession();
-
-  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined },
-  );
-  const presigned = api.posts.createPresignedUrl.useMutation();
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <p>
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
-      </p>
-      <Button
-        onClick={sessionData ? () => void signOut() : () => void signIn()}
-      >
-        {sessionData ? "Sign out" : "Sign in"}
-      </Button>
-      <Button
-        onClick={() => {
-          console.log(
-            presigned.mutate({ postId: "clnyedjt000052zp4xbkac072" }),
-          );
-        }}
-      >
-        presigned
-      </Button>
-      <Upload />
-    </div>
   );
 }

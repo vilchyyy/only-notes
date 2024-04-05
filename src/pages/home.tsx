@@ -1,50 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { randomInt } from "crypto";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import { useRouter } from "next/router";
-import { env } from "process";
-import { useState } from "react";
-import Dropzone from "react-dropzone";
 import Nav from "~/components/Nav";
 import { api } from "~/utils/api";
-import Image from "next/image";
 import Post from "~/components/Post";
+import Upload from "~/components/Upload";
 
 export default function Home() {
   const userQuery = api.posts.getAll.useQuery();
-  const utils = api.useContext();
-  const { data: sessionData } = useSession();
-  const createPost = api.posts.createOne.useMutation({
-    async onMutate(newPost) {
-      // Cancel outgoing fetches (so they don't overwrite our optimistic update)
-      await utils.posts.getAll.cancel();
 
-      // Get the data from the queryCache
-      const prevData = utils.posts.getAll.getData();
-      let optimisticData;
-      if (prevData && sessionData?.user.id) {
-        optimisticData = [
-          ...prevData,
-          {
-            ...newPost,
-            createdAt: new Date(),
-            id: "test",
-            userId: sessionData?.user.id,
-            updatedAt: new Date(),
-          },
-        ];
-      }
-    },
-    onError(err, newPost, ctx) {
-      // If the mutation fails, use the context-value from onMutate
-      console.log("Internal server error");
-    },
-    async onSettled() {
-      // Sync with server once mutation has settled
-      await utils.posts.getAll.invalidate();
-    },
-  });
   return (
     <>
       <Head>
@@ -62,12 +26,11 @@ export default function Home() {
 
         <div className="container flex w-full flex-col items-center justify-center gap-12 px-4 py-16 ">
           <div className="flex w-full flex-col items-center gap-2">
-            <p className="leading-7 [&:not(:first-child)]:mt-6">
-              Strona Główna
-            </p>
+            <Upload />
             {!userQuery.data && <h1>Nie znaleziono postów</h1>}
             {userQuery.data?.map((post) => (
               <Post
+                comments={post.comments.map((comment) => comment.id)}
                 id={post.id}
                 bookmarks={post.bookmarks.map((bookmark) => bookmark.id)}
                 key={post.id}
@@ -77,15 +40,6 @@ export default function Home() {
                 images={post.images.map((image) => image.remoteId)}
               />
             ))}
-            <Button
-              onClick={(e) => {
-                e.preventDefault();
-                createPost.mutate({
-                  text: "TEST",
-                  images: [],
-                });
-              }}
-            ></Button>
           </div>
         </div>
         <div className="block sm:hidden">

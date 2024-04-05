@@ -17,6 +17,9 @@
 /out/
 next-env.d.ts
 
+#file server
+/file_server
+
 # production
 /build
 

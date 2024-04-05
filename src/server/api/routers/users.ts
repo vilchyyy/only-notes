@@ -132,6 +132,10 @@ export const userRouter = createTRPCRouter({
         likes: true,
         bookmarks: true,
         images: true,
+        comments: true,
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
   }),
