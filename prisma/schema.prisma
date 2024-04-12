@@ -70,6 +70,7 @@ model User {
     createdAt        DateTime        @default(now())
 }
 
+
 model Cattegory {
     id   String @id @default(cuid())
     name String @unique @db.VarChar(20)
@@ -101,7 +102,7 @@ model Image {
 
 model Tag {
     id     String  @id @default(cuid())
-    name   String  @db.VarChar(20)
+    name   String  @db.VarChar(20) @unique
     Post   Post?   @relation(fields: [postId], references: [id])
     postId String?
 }

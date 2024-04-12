@@ -14,9 +14,11 @@ import {
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
+import TagInput from "./TagInput";
 
 export const createPostValidationSchema = z.object({
   text: z.string(),
+  tags: z.string().array().max(10),
   images: z.string().array().max(10),
 });
 export default function Upload() {
@@ -35,6 +37,7 @@ export default function Upload() {
     defaultValues: {
       text: "",
       images: [],
+      tags: [],
     },
   });
 
@@ -106,7 +109,6 @@ export default function Upload() {
               {...form.register("text")}
               className="border"
             />
-
             {form.formState.errors.text?.message && (
               <p className="text-red-700">
                 {form.formState.errors.text?.message}
@@ -144,6 +146,10 @@ export default function Upload() {
             )}
           </div>
         </Form>
+        <TagInput
+          availableTags={["polski", "angielski", "niemiecki", "matematyka"]}
+          onSubmit={() => {}}
+        />
       </div>
       <SubmitButton
         form={form}

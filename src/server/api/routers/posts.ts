@@ -175,6 +175,16 @@ export const postsRouter = createTRPCRouter({
           data: {
             text: input.text,
             userId: ctx.session.user.id,
+            tags: {
+              connectOrCreate: input.tags.map((tag) => ({
+                where: {
+                  name: tag,
+                },
+                create: {
+                  name: tag,
+                },
+              })),
+            },
           },
         });
       } catch (error) {
